@@ -1,14 +1,19 @@
-#import <Cocoa/Cocoa.h>
-#include <sys/event.h>
-#include <sys/time.h>
-#include <sys/types.h>
-#include <unistd.h>
-#include <uv.h>
-void noop(void* data) {}
+#include "../../includes/event-loop-darwin.h"
+#include "../../includes/event-loop.h"
 
 int uiLoopWakeup() {
-  dispatch_async(dispatch_get_main_queue(), ^{
-                 });
+  [NSApp postEvent:[NSEvent otherEventWithType:NSApplicationDefined
+                                      location:NSZeroPoint
+                                 modifierFlags:0
+                                     timestamp:0.0
+                                  windowNumber:0
+                                       context:nil
+                                       subtype:0
+                                         data1:0
+                                         data2:0]
+           atStart:NO];
+  // give main thread some time to react
+  usleep(50 * 1000);
   return 0;
 }
 
@@ -31,5 +36,14 @@ int waitForNodeEvents(uv_loop_t* loop, int timeout) {
   struct timespec ts;
   ts.tv_sec = timeout / 1000;
   ts.tv_nsec = (timeout % 1000) * 1000000;
-  return kevent(nodeBackendFd, NULL, 0, &event, 1, &ts);
+  
+  int ret = kevent(nodeBackendFd, NULL, 0, &event, 1, &ts);
+  
+  struct heap* timer_heap = (struct heap*)&loop->timer_heap;
+  struct heap_node* timer_node = timer_heap->min;
+  if (timer_node != NULL) {
+    return 1;
+  }
+  
+  return ret;
 }
