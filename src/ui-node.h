@@ -241,15 +241,6 @@ class UiVerticalSeparator : public UiControl {
   DEFINE_CONTROL_METHODS()
 };
 
-class UiLabel : public UiControl {
- public:
-  UiLabel();
-  UiLabel(const char* text);
-  DEFINE_CONTROL_METHODS()
-  void setText(const char* text);
-  const char* getText();
-};
-
 class UiGroup : public UiControl {
  public:
   UiGroup(const char* text);

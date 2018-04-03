@@ -34,7 +34,12 @@
 		"build": "node-gyp configure build",
 		"clean": "rm -rf build; rm -rf node_modules;"
 	},
-	"keywords": ["libui", "desktop", "multiplatform", "GUI"],
+	"keywords": [
+		"libui",
+		"desktop",
+		"multiplatform",
+		"GUI"
+	],
 	"engines": {
 		"node": ">=4"
 	},

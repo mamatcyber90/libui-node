@@ -39,21 +39,28 @@ winCheckMem.setChild(vBox2);
 winCheckMem.show();
 
 const interval = setInterval(() => {
+	let prevResults = null;
+	const big = new Array(1000 * 1000).join('a');
 	procStats.stats((err, result) => {
+		console.log(label.text);
 		if (err) {
 			label.text = err.message;
-		} else {
+		} else if (prevResults === null || result.memory !== prevResults.memory || result.memoryInfo.heapUsed !== prevResults.memoryInfo.heapUsed) {
+			prevResults = result;
 			const text = `
 Memory: ${humanize.filesize(result.memory)}
 Heap: ${humanize.filesize(result.memoryInfo.heapUsed)}
 CPU: ${result.cpu} %
-`;
-			label.text = text;
+			`;
+
+			label.text = text + '\n' + big;
 		}
+		global.gc();
 	});
-}, 1000);
+}, 10);
 
 winCheckMem.onClosing(() => {
+	winCheckMem.close();
 	clearInterval(interval);
 	libui.stopLoop();
 });
