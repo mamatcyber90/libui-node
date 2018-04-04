@@ -10,12 +10,22 @@ class UiLabel : public UiControl {
   DEFINE_CONTROL_METHODS()
   void setText(std::string text);
   std::string getText();
+  void setTextOld(const char* text);
+  const char* getTextOld();
 };
 
 UiLabel::UiLabel(const char* text) : UiControl((uiControl*)uiNewLabel(text)) {}
 UiLabel::UiLabel() : UiControl((uiControl*)uiNewLabel("")) {}
 
 INHERITS_CONTROL_METHODS(UiLabel)
+
+void UiLabel::setTextOld(const char* text) {
+	uiLabelSetText((uiLabel*)getHandle(), text);
+}
+
+const char* UiLabel::getTextOld() {
+	return uiLabelText((uiLabel*)getHandle());
+}
 
 void UiLabel::setText(std::string text) {
   const char* char_ptr = text.c_str();
@@ -34,6 +44,7 @@ NBIND_CLASS(UiLabel) {
   construct<>();
   DECLARE_CHILD_CONTROL_METHODS()
   getset(getText, setText);
+  getset(getTextOld, setTextOld);
   method(getText);
   method(setText);
 }
